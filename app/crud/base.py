@@ -6,11 +6,20 @@ from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import configparser
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
-engine = create_engine("postgresql://postgres:password@host/db_name", pool_pre_ping=True)
+config = configparser.ConfigParser()
+config.read(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'settings.ini')))
+
+config.read("settings.ini")
+
+print(config["db"]["username"])
+
+engine = create_engine(f"postgresql://{config['db']['username']}:{config['db']['password']}@localhost:5432/{config['db']['name']}",
+                       pool_pre_ping=True)
 
 Base = declarative_base(bind=engine)
 

@@ -8,13 +8,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.api.deps import get_db
+from app.crud.base import config
 from app.main import app
 from app.models.models import Player
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:password@host/db_name"
+SQLALCHEMY_DATABASE_URL = f"postgresql://{config['test_db']['username']}:{config['test_db']['password']}@localhost:5432/{config['test_db']['name']}"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
@@ -72,4 +73,3 @@ def test_bad_connect():
         f"http://127.0.0.1:8000/connect_to_room/?player_nick=test_player2&room_token=123")
     data = response.json()
     assert response.status_code == 404
-    # assert data['result'] == False
