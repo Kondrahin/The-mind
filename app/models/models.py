@@ -1,12 +1,11 @@
 import logging
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, ARRAY, Integer, CheckConstraint, ForeignKey
 from sqlalchemy.orm import relationship
 
+from app.crud.base import Base
+
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
-
-Base = declarative_base()
 
 
 class Player(Base):
@@ -25,7 +24,7 @@ class Player(Base):
 class Room(Base):
     __tablename__ = 'rooms'
     id = Column(String(6), primary_key=True, unique=True)
-    admin = Column(String(16), nullable=False)
+    admin = Column(String(22), nullable=False)
     level = Column(Integer, CheckConstraint('level>=0 and level<=12'))
     status = Column(String(10), nullable=False, default='created')
     pool = Column(ARRAY(Integer))
