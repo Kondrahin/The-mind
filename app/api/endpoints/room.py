@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
-from app.exceptions import SessionOverflow, SessionStarted
+from app.exceptions import SessionOverflow, SessionStarted, NonAdmin, FewPlayers, RoomNotFound
 from app import crud
 
 router = APIRouter()
@@ -36,6 +36,19 @@ async def connect_to_room(player_nick: str, room_token: str, db: Session = Depen
         raise HTTPException(status_code=406, detail="Too much players in this room")
     except SessionStarted as e:
         raise HTTPException(status_code=406, detail="The game in this room have already started")
+
+
+@router.post("/start_game/")
+async def start_game(room_token: str, player_token: str, db: Session = Depends(get_db)):
+    try:
+        result = crud.room.start_game(db, room_token=room_token, player_token=player_token)
+        return result
+    except NonAdmin as e:
+        raise HTTPException(status_code=403, detail="Only admin of this room can start the game")
+    except RoomNotFound as e:
+        raise HTTPException(status_code=404, detail="Room wasn't found")
+    except FewPlayers as e:
+        raise HTTPException(status_code=406, detail="To start the game you need at least 2 players")
 
 
 @router.post("/is_admin/")
