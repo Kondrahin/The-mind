@@ -52,12 +52,11 @@ def test_create_room():
     assert response.status_code == 200
 
 
-def test_is_admin():
+def test_start_game_few_players():
     response = client.post(
-        f"http://127.0.0.1:8000/is_admin/?player_token={test_player1.id}&room_token={test_player1.room_token}")
+        f"http://127.0.0.1:8000/start_game/?room_token={test_player1.room_token}&player_token={test_player1.id}")
     data = response.json()
-    assert response.status_code == 200
-    assert data['result'] == True
+    assert response.status_code == 406
 
 
 def test_connect():
@@ -73,3 +72,27 @@ def test_bad_connect():
         f"http://127.0.0.1:8000/connect_to_room/?player_nick=test_player2&room_token=123")
     data = response.json()
     assert response.status_code == 404
+
+
+def test_start_game_non_admin():
+    response = client.post(
+        f"http://127.0.0.1:8000/start_game/?room_token={test_player1.room_token}&player_token={test_player2.id}")
+    data = response.json()
+    assert response.status_code == 403
+
+
+def test_start_game_2_players(caplog):
+    caplog.set_level(logging.INFO)
+    response = client.post(
+        f"http://127.0.0.1:8000/start_game/?room_token={test_player1.room_token}&player_token={test_player1.id}")
+    data = response.json()
+    assert response.status_code == 200
+    assert data['result'] == 2
+
+
+def test_is_admin():
+    response = client.post(
+        f"http://127.0.0.1:8000/is_admin/?player_token={test_player1.id}&room_token={test_player1.room_token}")
+    data = response.json()
+    assert response.status_code == 200
+    assert data['result'] == True
