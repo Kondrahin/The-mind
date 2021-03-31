@@ -6,7 +6,10 @@ create table rooms (
     admin varchar(22) not null,
     level integer check(level>=0 and level<=12),
     status varchar(10) not null default 'created',
-    pool integer []
+    pool integer [],
+    lives integer not null default 0,
+    shurikens integer not null default 0,
+    end_level integer not null default 0
 );
 
 create table players (
@@ -14,7 +17,7 @@ create table players (
     nick varchar(30) not null,
     hand integer [],
     room_token varchar(22),
---     CONSTRAINT fk_room_token
+    CONSTRAINT fk_room_token
       FOREIGN KEY(room_token)
 	  REFERENCES rooms(id)
 	  ON DELETE CASCADE
