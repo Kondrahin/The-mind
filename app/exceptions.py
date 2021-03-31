@@ -8,3 +8,11 @@ class SessionStarted(Exception):
 
 class FewPlayers(Exception):
     pass
+
+
+class RoomNotFound(Exception):
+    pass
+
+
+class NonAdmin(Exception):
+    pass
